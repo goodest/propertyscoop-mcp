@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "us.propertyscoop/mcp",
+  "title": "PropertyScoop",
+  "description": "Property intelligence API for US real estate. Returns 16+ data points for any US address: noise levels, wetlands, terrain slope, solar exposure, powerline proximity, crime rates, property facing direction, zoning, property details, radon risk, natural hazards (earthquake, flood, wildfire), neighborhood demographics, falling tree risk, RF/cell tower exposure, school ratings, and environmental hazards.",
+  "version": "1.0.1",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.propertyscoop.us",
+      "headers": [
+        {
+          "name": "X-API-Key",
+          "description": "Your PropertyScoop API key. Get one at https://www.propertyscoop.us/APIAccess",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
