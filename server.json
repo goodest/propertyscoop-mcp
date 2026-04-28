@@ -3,7 +3,7 @@
   "name": "us.propertyscoop/mcp",
   "title": "PropertyScoop",
   "description": "Property intelligence API for US real estate. Six specialized tools for any US address: get_facing (satellite-derived property orientation), get_power_substation_location (nearby substations within 1 mile), get_water_quality (EPA drinking water compliance and violation history), get_rf_exposure (RF/EMF levels from FCC-licensed transmitters within 2 miles), get_noise_score (road, rail, and aviation noise in dB), get_falling_tree_risk (tree hazard assessment based on canopy density and storm history).",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "remotes": [
     {
       "type": "streamable-http",

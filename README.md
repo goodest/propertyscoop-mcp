@@ -4,7 +4,7 @@ A remote [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server 
 
 ## Tools
 
-### `get_facing`
+### `get_facing` *(experimental)*
 
 Returns the cardinal or intercardinal direction a property's front faces, derived from satellite imagery and machine learning. Useful for evaluating sun exposure, solar panel potential, or prevailing wind exposure. South-facing properties receive more winter sunlight in the Northern Hemisphere.
 
@@ -52,23 +52,9 @@ Finds electrical power substations within a 1-mile radius of a property. Useful 
         "distance_meters": 959.95,
         "distance_miles": 0.6
       }
-    },
-    {
-      "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [-122.208704, 47.6135383] },
-      "properties": {
-        "name": "",
-        "operator": "Puget Sound Energy",
-        "substation_type": "distribution",
-        "voltage": "",
-        "city": "",
-        "state": "WA",
-        "distance_meters": 1288.59,
-        "distance_miles": 0.8
-      }
     }
   ],
-  "count": 2
+  "count": 1
 }
 ```
 
@@ -184,9 +170,32 @@ Sign up at [propertyscoop.us/APIAccess](https://www.propertyscoop.us/APIAccess) 
 
 ### 2. Configure your MCP client
 
-#### Claude Desktop / Claude Code
+#### Claude Desktop
 
-Add to your MCP configuration:
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "propertyscoop": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.propertyscoop.us/",
+        "--header",
+        "X-API-Key:your_api_key_here"
+      ]
+    }
+  }
+}
+```
+
+#### Cursor / Windsurf
+
+Go to **MCP settings** → add server URL `https://mcp.propertyscoop.us` and set the header `X-API-Key: your_api_key_here`.
+
+#### Claude Code / Other streamable-HTTP clients
 
 ```json
 {
@@ -202,34 +211,35 @@ Add to your MCP configuration:
 }
 ```
 
-#### Cursor / Other MCP clients
-
-Use the remote server URL `https://mcp.propertyscoop.us` with your API key in the `X-API-Key` header.
-
 ## Pricing
 
 Each tool can be individually enabled or disabled from the API Access dashboard.
 
-| Tool                            | Free Tier      | Paid Price    |
-|---------------------------------|----------------|---------------|
-| `get_facing`                    | 1–2,000 calls  | $0.02/call    |
-|                                 | 2,001–5,000    | $0.015/call   |
-|                                 | 5,001+         | $0.01/call    |
-| `get_power_substation_location` | First 10/month | $0.01/call    |
-| `get_water_quality`             | First 10/month | $0.01/call    |
-| `get_rf_exposure`               | First 10/month | $0.03/call    |
-| `get_noise_score`               | First 10/month | $0.01/call    |
-| `get_falling_tree_risk`         | First 10/month | $0.20/call    |
+| Tool | Volume | Price per Call |
+|------|--------|---------------|
+| `get_facing` | 1 – 2,000 calls | $0.02 |
+| | 2,001 – 5,000 calls | $0.015 |
+| | 5,001+ calls | $0.01 |
+| `get_power_substation_location` | First 10/month | Free |
+| | 11+ calls | $0.01 |
+| `get_water_quality` | First 10/month | Free |
+| | 11+ calls | $0.01 |
+| `get_rf_exposure` | First 10/month | Free |
+| | 11+ calls | $0.03 |
+| `get_noise_score` | First 10/month | Free |
+| | 11+ calls | $0.01 |
+| `get_falling_tree_risk` | First 10/month | Free |
+| | 11+ calls | $0.20 |
 
 Only `tools/call` requests that successfully retrieve data are billed. Protocol messages (`tools/list`, `initialize`) are free.
 
 ## Rate Limits
 
-| Limit          | Value                  |
-|----------------|------------------------|
-| Burst          | 100 concurrent requests |
-| Sustained rate | 50 requests/sec        |
-| Daily quota    | 10,000 requests        |
+| Limit | Value |
+|-------|-------|
+| Burst | 100 concurrent requests |
+| Sustained rate | 50 requests/sec |
+| Daily quota | 10,000 requests |
 
 Exceeding these limits returns HTTP `429 Too Many Requests`. Limits are per API key. Contact us if you need higher limits.
 
@@ -237,12 +247,12 @@ Exceeding these limits returns HTTP `429 Too Many Requests`. Limits are per API 
 
 The server uses standard [JSON-RPC 2.0](https://www.jsonrpc.org/specification) error codes:
 
-| Code    | Meaning          | Description                                                              |
-|---------|------------------|--------------------------------------------------------------------------|
-| -32600  | Invalid Request  | Malformed JSON-RPC request                                               |
-| -32601  | Method Not Found | Unknown MCP method                                                       |
-| -32602  | Invalid Params   | Missing or invalid parameters (e.g., empty address, exceeds 500 chars)  |
-| -32603  | Internal Error   | Server-side failure or tool not enabled for your key                    |
+| Code | Meaning | Description |
+|------|---------|-------------|
+| -32600 | Invalid Request | Malformed JSON-RPC request |
+| -32601 | Method Not Found | Unknown MCP method |
+| -32602 | Invalid Params | Missing or invalid parameters (e.g., empty address, exceeds 500 chars) |
+| -32603 | Internal Error | Server-side failure or tool not enabled for your key |
 
 Example error response:
 
@@ -261,13 +271,13 @@ If a tool is not enabled for your API key, you will receive a `-32603` error dir
 
 ## Troubleshooting
 
-| Symptom                       | Cause                         | Fix                                                              |
-|-------------------------------|-------------------------------|------------------------------------------------------------------|
-| `API key validation failed`   | Invalid or deactivated key    | Verify your key at [propertyscoop.us/APIAccess](https://www.propertyscoop.us/APIAccess) |
-| `Method 'X' is not enabled`   | Tool not enabled for this key | Enable it at [propertyscoop.us/APIAccess](https://www.propertyscoop.us/APIAccess) |
-| `429 Too Many Requests`       | Rate limit exceeded           | Reduce request frequency or contact us for higher limits         |
-| `Address is required`         | Empty address parameter       | Provide a complete US street address                             |
-| No response / timeout         | Network issue                 | Verify connectivity to `https://mcp.propertyscoop.us`            |
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| `API key validation failed` | Invalid or deactivated key | Verify your key at [propertyscoop.us/APIAccess](https://www.propertyscoop.us/APIAccess) |
+| `Method 'X' is not enabled` | Tool not enabled for this key | Enable it at [propertyscoop.us/APIAccess](https://www.propertyscoop.us/APIAccess) |
+| `429 Too Many Requests` | Rate limit exceeded | Reduce request frequency or contact us for higher limits |
+| `Address is required` | Empty address parameter | Provide a complete US street address |
+| No response / timeout | Network issue | Verify connectivity to `https://mcp.propertyscoop.us` |
 
 ## Links
 
