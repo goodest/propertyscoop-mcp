@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "us.propertyscoop/mcp",
   "title": "PropertyScoop",
-  "description": "Property intelligence API for US real estate. Returns 18+ data points for any US address: noise levels, wetlands, terrain slope, solar exposure, powerline proximity, crime rates, property facing direction, zoning, property details, radon risk, natural hazards (earthquake, flood, wildfire), neighborhood demographics, falling tree risk, RF/cell tower exposure, school ratings, environmental hazards, water quality, and privacy rating.",
-  "version": "1.1.0",
+  "description": "Property intelligence API for US real estate. Six specialized tools for any US address: get_facing (satellite-derived property orientation), get_power_substation_location (nearby substations within 1 mile), get_water_quality (EPA drinking water compliance and violation history), get_rf_exposure (RF/EMF levels from FCC-licensed transmitters within 2 miles), get_noise_score (road, rail, and aviation noise in dB), get_falling_tree_risk (tree hazard assessment based on canopy density and storm history).",
+  "version": "1.2.1",
   "remotes": [
     {
       "type": "streamable-http",
